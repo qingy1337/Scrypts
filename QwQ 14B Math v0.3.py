@@ -62,8 +62,9 @@ batch_size = 4
 gradient_acc = 2
 max_steps = -1 # or -x where x is the epochs, so -5 is 5 epochs.
 seed = 69
-lr_scheduler = "cosine"
+lr_scheduler = "cosine_with_restarts"
 learning_rate = 2e-4
+warmup_steps = 100
 
 
 # ---
@@ -75,7 +76,7 @@ from unsloth import FastLanguageModel
 import torch
 from trl import SFTTrainer
 from datasets import load_dataset
-from transformers import TrainingArguments, TextStreamer
+from transformers import TrainingArguments, TextStreamer, EarlyStoppingCallback
 from unsloth.chat_templates import get_chat_template
 from unsloth import FastLanguageModel, is_bfloat16_supported
 import torch
@@ -153,6 +154,9 @@ os.environ['WANDB_API_KEY'] = '0aee5395a94fbd8e33ada07b71309b1f30561cac'
 
 # In[5]:
 
+callbacks = [
+    EarlyStoppingCallback(early_stopping_patience=5),
+]
 
 trainer = SFTTrainer(
     model=model,
@@ -162,6 +166,9 @@ trainer = SFTTrainer(
     max_seq_length=max_seq_length,
     dataset_num_proc=2,
     packing=False,
+    load_best_model_at_end=True,
+    metric_for_best_model="eval_loss",
+    callbacks=callbacks,
     args=TrainingArguments(
         learning_rate=learning_rate,
         lr_scheduler_type=lr_scheduler,
@@ -170,14 +177,14 @@ trainer = SFTTrainer(
 
         # num_train_epochs = 1, # Full epoch
 
-        max_steps=3500,
+        max_steps=3300,
         fp16=not is_bfloat16_supported(),
         bf16=is_bfloat16_supported(),
         logging_steps=1,
         optim="adamw_8bit",
         weight_decay=0.01,
         seed = seed,
-        warmup_steps=150,
+        warmup_steps=warmup_steps,
         output_dir="output",
         report_to = "wandb",
     ),
@@ -240,3 +247,50 @@ if lora_repo is not None:
 
 if merge_repo is not None:
     model.push_to_hub_merged(merge_repo, tokenizer, save_method = "merged_16bit", token = hf_token)
+
+
+import os
+import re
+from huggingface_hub import HfApi, upload_folder
+
+# Configuration
+BASE_DIR = "outputs"  # The folder containing the checkpoints
+HF_TOKEN = hf_token  # Replace with your Hugging Face token
+USER_ORG = "qingy2024"  # Replace with your Hugging Face username or organization
+
+def main():
+    # Step 1: Find the checkpoint folder with the largest number
+    pattern = re.compile(r'checkpoint-(\d+)')
+    checkpoint_numbers = [
+        int(pattern.match(folder).group(1))
+        for folder in os.listdir(BASE_DIR)
+        if pattern.match(folder)
+    ]
+
+    if not checkpoint_numbers:
+        raise ValueError("No checkpoint folders found in the 'outputs' directory.")
+
+    largest_number = max(checkpoint_numbers)
+    folder_to_upload = os.path.join(BASE_DIR, f"checkpoint-{largest_number}")
+    repo_name = f"wellfire2-ckpt-{largest_number}"
+    repo_id = f"{USER_ORG}/{repo_name}"
+
+    # Step 2: Create a new repository
+    api = HfApi()
+    try:
+        api.create_repo(repo_id=repo_id, private=False, token=HF_TOKEN)
+        print(f"Repository {repo_id} created successfully.")
+    except Exception as e:
+        print(f"Repository creation failed (might already exist): {e}")
+
+    # Step 3: Upload the folder
+    upload_folder(
+        folder_path=folder_to_upload,
+        repo_id=repo_id,
+        token=HF_TOKEN,
+        commit_message=f"Upload checkpoint {largest_number}"
+    )
+    print(f"Folder {folder_to_upload} uploaded to {repo_id} successfully.")
+
+if __name__ == "__main__":
+    main()
