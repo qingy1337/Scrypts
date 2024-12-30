@@ -163,6 +163,7 @@ trainer = UnslothTrainer(
     model=model,
     tokenizer=tokenizer,
     train_dataset=splits['train'],
+    eval_dataset = splits['test'],
     dataset_text_field="text",
     max_seq_length=max_seq_length,
     dataset_num_proc=2,
