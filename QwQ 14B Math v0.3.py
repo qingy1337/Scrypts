@@ -97,7 +97,7 @@ model = FastLanguageModel.get_peft_model(
     model,
     r = lora_rank,
     target_modules = ["q_proj", "k_proj", "v_proj", "o_proj",
-                      "gate_proj", "up_proj", "down_proj",],
+                      "gate_proj", "up_proj", "down_proj","embed_tokens", "lm_head"],
     lora_alpha = 32,
     lora_dropout = 0,
     bias = "none",
