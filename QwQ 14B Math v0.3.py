@@ -168,9 +168,9 @@ trainer = SFTTrainer(
         per_device_train_batch_size=batch_size,
         gradient_accumulation_steps=gradient_acc,
 
-        num_train_epochs = 1, # Full epoch
+        # num_train_epochs = 1, # Full epoch
 
-        # max_steps=max_steps,
+        max_steps=3500,
         fp16=not is_bfloat16_supported(),
         bf16=is_bfloat16_supported(),
         logging_steps=1,
