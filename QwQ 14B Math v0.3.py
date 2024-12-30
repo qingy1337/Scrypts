@@ -46,7 +46,7 @@ import os
 # In[ ]:
 
 
-model_name = "unsloth/Qwen2.5-14B"
+model_name = "models--unsloth--Qwen2.5-14B/snapshots/" + os.listdir('models--unsloth--Qwen2.5-14B/snapshots/')[0]
 max_seq_length = 8192
 load_in_4bit = False
 dtype = None
