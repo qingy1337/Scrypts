@@ -61,7 +61,7 @@ merge_repo = "qingy2024/QwQ-Math-14B-v0.3"
 batch_size = 4
 gradient_acc = 2
 max_steps = -1 # or -x where x is the epochs, so -5 is 5 epochs.
-seed = 3407
+seed = 69
 lr_scheduler = "cosine"
 learning_rate = 2e-4
 
@@ -177,7 +177,7 @@ trainer = SFTTrainer(
         optim="adamw_8bit",
         weight_decay=0.01,
         seed = seed,
-        warmup_steps=10,
+        warmup_steps=150,
         output_dir="output",
         report_to = "wandb",
     ),
