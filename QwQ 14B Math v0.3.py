@@ -27,7 +27,7 @@
 import os
 
 
-os.system('pip install --upgrade --no-cache-dir --no-deps "unsloth[cu124-ampere-torch250] @ git+https://github.com/unslothai/unsloth.git"')
+os.system('pip install "unsloth[cu124-ampere-torch250] @ git+https://github.com/unslothai/unsloth.git"')
 print("Unsloth installed.")
 os.system('pip install wandb')
 print("WandB installed.")
@@ -46,7 +46,7 @@ print("WandB installed.")
 # In[ ]:
 
 
-model_name = "../data/path/to/qwen-14B/"
+model_name = "unsloth/Qwen2.5-14B"
 max_seq_length = 8192
 load_in_4bit = False
 dtype = None
