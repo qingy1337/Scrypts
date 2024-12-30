@@ -74,9 +74,9 @@ warmup_steps = 100
 
 from unsloth import FastLanguageModel
 import torch
-from trl import SFTTrainer
+from unsloth import UnslothTrainer, UnslothTrainingArguments
 from datasets import load_dataset
-from transformers import TrainingArguments, TextStreamer, EarlyStoppingCallback
+from transformers import EarlyStoppingCallback
 from unsloth.chat_templates import get_chat_template
 from unsloth import FastLanguageModel, is_bfloat16_supported
 import torch
@@ -158,10 +158,11 @@ callbacks = [
     EarlyStoppingCallback(early_stopping_patience=5),
 ]
 
-trainer = SFTTrainer(
+splits = dataset.train_test_split(test_size = 0.005)
+trainer = UnslothTrainer(
     model=model,
     tokenizer=tokenizer,
-    train_dataset=dataset,
+    train_dataset=splits['train'],
     dataset_text_field="text",
     max_seq_length=max_seq_length,
     dataset_num_proc=2,
@@ -169,7 +170,12 @@ trainer = SFTTrainer(
     load_best_model_at_end=True,
     metric_for_best_model="eval_loss",
     callbacks=callbacks,
-    args=TrainingArguments(
+    args=UnslothTrainingArguments(
+        fp16_full_eval = True,
+        per_device_eval_batch_size = 2,
+        eval_accumulation_steps = 4,
+        eval_strategy = "steps",
+        eval_steps = 500,
         learning_rate=learning_rate,
         lr_scheduler_type=lr_scheduler,
         per_device_train_batch_size=batch_size,
@@ -177,7 +183,7 @@ trainer = SFTTrainer(
 
         # num_train_epochs = 1, # Full epoch
 
-        max_steps=3300,
+        max_steps=3250,
         fp16=not is_bfloat16_supported(),
         bf16=is_bfloat16_supported(),
         logging_steps=1,
@@ -187,6 +193,7 @@ trainer = SFTTrainer(
         warmup_steps=warmup_steps,
         output_dir="output",
         report_to = "wandb",
+        embedding_learning_rate = 5e-6,
     ),
 )
 
