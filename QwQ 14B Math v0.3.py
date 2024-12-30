@@ -27,7 +27,7 @@
 import os
 
 
-os.system('pip install "unsloth[cu124-ampere-torch250] @ git+https://github.com/unslothai/unsloth.git"')
+# os.system('pip install "unsloth[cu124-ampere-torch250] @ git+https://github.com/unslothai/unsloth.git"')
 print("Unsloth installed.")
 os.system('pip install wandb')
 print("WandB installed.")
