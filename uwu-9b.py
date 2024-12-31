@@ -137,7 +137,7 @@ tokenizer = get_chat_template(
 )
 
 def apply_template(examples):
-    messages = list(zip(examples['prompt'], ['response'])).map(lambda msg: [{'from': 'human': 'value': msg[0]}, {'from': 'gpt': 'value': msg[1]}])
+    messages = list(zip(examples['prompt'], ['response'])).map(lambda msg: [{'from': 'human', 'value': msg[0]}, {'from': 'gpt', 'value': msg[1]}])
     
     text = [tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=False) for message in messages]
     return {"text": text}
