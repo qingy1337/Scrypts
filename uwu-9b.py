@@ -137,10 +137,20 @@ tokenizer = get_chat_template(
 )
 
 def apply_template(examples):
-    messages = list(zip(examples['prompt'], ['response'])).map(lambda msg: [{'from': 'human', 'value': msg[0]}, {'from': 'gpt', 'value': msg[1]}])
+    # Create a list of messages by zipping prompts with their responses
+    messages = [
+        [{'from': 'human', 'value': prompt}, {'from': 'gpt', 'value': response}]
+        for prompt, response in zip(examples['prompt'], examples['response'])
+    ]
     
-    text = [tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=False) for message in messages]
+    # Apply the chat template to each message
+    text = [
+        tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=False)
+        for message in messages
+    ]
+    
     return {"text": text}
+
 
 dataset = load_dataset("qingy2024/FineQwQ-142k", split="50k")
 dataset = dataset.map(apply_template, batched=True)
