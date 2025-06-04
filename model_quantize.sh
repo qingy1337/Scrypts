@@ -66,6 +66,10 @@ for FILE in $QUANTIZED_FILES; do
 done
 
 cat > "${UPLOAD_DIR}/README.md" << EOL
+---
+base_model:
+- ${INPUT_MODEL}
+---
 # Quantized GGUF models for ${MODEL_NAME}
 
 This repository contains GGUF quantized versions of [${INPUT_MODEL}](https://huggingface.co/${INPUT_MODEL}).
