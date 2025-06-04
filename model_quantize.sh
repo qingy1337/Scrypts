@@ -27,6 +27,8 @@ FP16_GGUF="${WORK_DIR}/${MODEL_NAME}-FP16.gguf"
 mkdir -p "$WORK_DIR"
 echo "Working directory: $WORK_DIR"
 
+chmod +x ./llama-quantize
+
 echo "Downloading model ${INPUT_MODEL}..."
 huggingface-cli download "${INPUT_MODEL}" --local-dir "${WORK_DIR}"
 if [ $? -ne 0 ]; then
@@ -47,7 +49,7 @@ QUANTIZED_FILES=""
 for QUANT in $QUANT_TYPES; do
   QUANT_OUTPUT="${WORK_DIR}/${MODEL_NAME}-${QUANT}.gguf"
   echo "Quantizing model to ${QUANT}..."
-  llama-quantize "${FP16_GGUF}" "${QUANT_OUTPUT}" "${QUANT}"
+  ./llama-quantize "${FP16_GGUF}" "${QUANT_OUTPUT}" "${QUANT}"
   if [ $? -ne 0 ]; then
     echo "Warning: Failed to quantize model to ${QUANT}. Continuing."
     continue
