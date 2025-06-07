@@ -52,6 +52,7 @@ def start_screen_streaming_client(server_host, server_port=9999):
             
             # Compress with JPEG and send
             with io.BytesIO() as output:
+                # Use rgb_img instead of img
                 rgb_img.save(output, format='JPEG', quality=70)
                 data = output.getvalue()
                 
