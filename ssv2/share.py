@@ -47,9 +47,12 @@ def start_screen_streaming_client(server_host, server_port=9999):
             # Create image from buffer
             img = Image.frombuffer('RGBA', (width, height), buffer, 'raw', 'BGRA', 0, 1)
             
+            # Convert RGBA to RGB before saving as JPEG
+            rgb_img = img.convert('RGB')
+            
             # Compress with JPEG and send
             with io.BytesIO() as output:
-                img.save(output, format='JPEG', quality=70)
+                rgb_img.save(output, format='JPEG', quality=70)
                 data = output.getvalue()
                 
             message_size = struct.pack("L", len(data))
@@ -64,4 +67,6 @@ def start_screen_streaming_client(server_host, server_port=9999):
         windll.user32.ReleaseDC(None, hdcScreen)
         client_socket.close()
 
-start_screen_streaming_client('192.168.68.116')
+if __name__ == "__main__":
+    server_ip = input("Enter the IP address of the server: ")
+    start_screen_streaming_client(server_ip)
