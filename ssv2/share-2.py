@@ -68,6 +68,4 @@ def start_screen_streaming_client(server_host, server_port=9999):
         windll.user32.ReleaseDC(None, hdcScreen)
         client_socket.close()
 
-if __name__ == "__main__":
-    server_ip = input("Enter the IP address of the server: ")
-    start_screen_streaming_client(server_ip)
+start_screen_streaming_client('192.168.68.101',server_port=1414)
