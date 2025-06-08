@@ -26,8 +26,8 @@ SERVER_PORT = 1414
 FRAME_W, FRAME_H = 1280, 720          # down-sampled resolution to transmit
 KEYFRAME_INTERVAL = 500               # send a full frame every N frames
 JPEG_Q = 90                           # quality for key-frames
-THRESH_DELTA = 8                      # 0–255 – lower = more sensitive
-MIN_CONTOUR_AREA = 100                # ignore tiny noise
+THRESH_DELTA = 0                      # 0–255 – lower = more sensitive
+MIN_CONTOUR_AREA = 30                 # ignore tiny noise
 
 # --------------------------------------------------------------------------- #
 #  Helpers                                                                    #
