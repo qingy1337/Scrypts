@@ -31,6 +31,7 @@ def quantize_model_with_imatrix(
     """
     
     model_name = input_model.split("/")[-1]
+    cwd = os.getcwd()
     work_dir = Path(f"./{model_name}_work")
     upload_dir = Path(f"./{model_name}_upload")
     
@@ -76,7 +77,7 @@ def quantize_model_with_imatrix(
         if result.returncode != 0:
             print(f"Error converting to BF16: {result.stderr}")
             return False
-        
+        os.chdir(cwd)
         # Prepare calibration data
         calibration_file = work_dir / "calibration.txt"
         print(f"Preparing calibration data from dataset (max {max_samples} samples)...")
