@@ -94,6 +94,10 @@ def quantize_model_with_imatrix(
                     f.write(text.strip() + '\n\n')
         
         print(f"Created calibration file with {sample_count} samples")
+
+        print("------ OS Listdir ------")
+        print(os.listdir('.'))
+        print('---\n' + os.getcwd())
         
         # Create imatrix
         imatrix_file = work_dir / "imatrix.dat"
